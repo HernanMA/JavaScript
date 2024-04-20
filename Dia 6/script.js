@@ -126,3 +126,49 @@ account2.deposit(300);
 //withdraw money from accounts
 account1.withdraw(300);
 account2.withdraw(600);
+
+
+
+//Exercice 5
+// Define the Shape class
+class Shape {
+    calculateArea() {
+        // Default implementation returns 0
+        return 0;
+    }
+}
+
+// Define the Circle subclass inheriting from Shape
+class Circle extends Shape {
+    constructor(radius) {
+        super();
+        this.radius = radius;
+    }
+
+    // Override the calculateArea method for circles
+    calculateArea() {
+        return Math.PI * this.radius ** 2;
+    }
+}
+
+// Define the Triangle subclass inheriting from Shape
+class Triangle extends Shape {
+    constructor(base, height) {
+        super();
+        this.base = base;
+        this.height = height;
+    }
+
+    // Override the calculateArea method for triangles
+    calculateArea() {
+        return 0.5 * this.base * this.height;
+    }
+}
+
+// Create an instance of the Circle class
+const circle = new Circle(5);
+console.log("Area of the circle:", circle.calculateArea());
+
+// Create an instance of the Triangle class
+const triangle = new Triangle(4, 6);
+console.log("Area of the triangle:", triangle.calculateArea());
