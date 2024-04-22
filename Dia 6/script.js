@@ -172,3 +172,41 @@ console.log("Area of the circle:", circle.calculateArea());
 // Create an instance of the Triangle class
 const triangle = new Triangle(4, 6);
 console.log("Area of the triangle:", triangle.calculateArea());
+
+
+
+//Exercice 6 
+//Define class A
+class A {
+    constructor(arg) {
+        this.argA = arg;
+    }
+}
+
+//Define class B, which is a child of A
+class B extends A {
+    constructor(argA, argB) {
+        super(argA);
+        this.argB = argB;
+    }
+}
+
+//Define class C, which is a child of B 
+class C extends B {
+    constructor(argA, argB, argC) {
+        super(argA, argB);
+        this.argC = argC;
+    }
+
+    //Method specific to class C
+    display() {
+        console.log(`Arguments: A - ${this.argA}, B - ${this.argB}, C - ${this.argC}`)
+    }
+}
+    //Create an instance of C class
+    const instanceC = new C ("argA", "argB", "argC");
+
+    //Call the display method 
+    instanceC.display();
+
+
