@@ -54,22 +54,22 @@ function displayResults(heroes) {
 
     heroes.forEach(hero => {
         var heroCard = `
-      <div class="card mb-3">
+    <div class="card mb-3">
         <div class="row no-gutters">
-          <div class="col-md-4">
+        <div class="col-md-4">
             <img src="${hero.image.url}" class="card-img" alt="${hero.name}">
-          </div>
-          <div class="col-md-8">
-            <div class="card-body">
-              <h5 class="card-title">${hero.name}</h5>
-              <p class="card-text">Inteligencia: ${hero.powerstats.intelligence}</p>
-              <p class="card-text">Fuerza: ${hero.powerstats.strength}</p>
-              <p class="card-text">Velocidad: ${hero.powerstats.speed}</p>
-              <p class="card-text">Publicado por: ${hero.biography.publisher}</p>
-            </div>
-          </div>
         </div>
-      </div>
+        <div class="col-md-8">
+            <div class="card-body">
+            <h5 class="card-title">${hero.name}</h5>
+            <p class="card-text">Inteligencia: ${hero.powerstats.intelligence}</p>
+            <p class="card-text">Fuerza: ${hero.powerstats.strength}</p>
+            <p class="card-text">Velocidad: ${hero.powerstats.speed}</p>
+            <p class="card-text">Publicado por: ${hero.biography.publisher}</p>
+            </div>
+        </div>
+        </div>
+    </div>
     `;
         resultsDiv.innerHTML += heroCard;
     });

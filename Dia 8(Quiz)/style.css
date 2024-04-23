@@ -1,0 +1,24 @@
+header {
+    display: grid;
+    grid-template-columns: auto;
+    text-align: center;
+    font-size: 1.7em;
+}
+
+nav {
+    display: grid;
+    grid-template-columns: auto;
+    text-align: center;
+    font-size: 1.5em;
+    color: black;
+}
+
+body {
+    margin: 1em 30em 12em 30em;
+}
+
+.loading {
+    display: grid;
+    align-items: center;
+}
+
