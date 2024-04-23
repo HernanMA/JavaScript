@@ -26,7 +26,7 @@ function searchSuperheroByName(name) {
 }
 
 function searchSuperheroByPower(power) {
-    fetch(`https://superheroapi.com/api.php/{YOUR_ACCESS_TOKEN}/search/${power}`)
+    fetch(`https://superheroapi.com/api.php/6cc5657b0377e514d32a84daa08395e4/search/${power}`)
         .then(response => response.json())
         .then(data => {
             displayResults(data.results);
@@ -35,7 +35,7 @@ function searchSuperheroByPower(power) {
 }
 
 function getRandomSuperhero() {
-    fetch(`https://superheroapi.com/api.php/{YOUR_ACCESS_TOKEN}/${Math.floor(Math.random() * 731)}`)
+    fetch(`https://superheroapi.com/api.php/6cc5657b0377e514d32a84daa08395e4/${Math.floor(Math.random() * 731)}`)
         .then(response => response.json())
         .then(data => {
             displayResults([data]);
