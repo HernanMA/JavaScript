@@ -1,3 +1,13 @@
+document.addEventListener('DOMContentLoaded', function() {
+    var audio = document.getElementById('audio');
+    var volumeSlider = document.getElementById('volume-slider');
+
+    volumeSlider.addEventListener('input', function() {
+        audio.volume = parseFloat(volumeSlider.value);
+    });
+});
+
+
 const pokemonName = document.querySelector('.pokemon__name');
 const pokemonNumber = document.querySelector('.pokemon__number');
 const pokemonImage = document.querySelector('.pokemon__image');
@@ -37,11 +47,18 @@ const renderPokemon = async (pokemon) => {
         pokemonImage.src = data['sprites']['versions']['generation-v']['black-white']['animated']['front_default'];
         input.value = '';
         searchPokemon = data.id;
+        playPokemonCry(data.cries.latest);
     } else {
         pokemonImage.style.display = 'none';
         pokemonName.innerHTML = 'Not found :(';
         pokemonNumber.innerHTML = '';
     }
+}
+
+function playPokemonCry(audioUrl) {
+    let audio = document.getElementById("pokemonCry");
+    audio.src = audioUrl;
+    audio.play();
 }
 
 form.addEventListener('submit', (event) => {
