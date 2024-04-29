@@ -1,13 +1,3 @@
-document.addEventListener('DOMContentLoaded', function() {
-    var audio = document.getElementById('audio');
-    var volumeSlider = document.getElementById('volume-slider');
-
-    volumeSlider.addEventListener('input', function() {
-        audio.volume = parseFloat(volumeSlider.value);
-    });
-});
-
-
 const pokemonName = document.querySelector('.pokemon__name');
 const pokemonNumber = document.querySelector('.pokemon__number');
 const pokemonImage = document.querySelector('.pokemon__image');
