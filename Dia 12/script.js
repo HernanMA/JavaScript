@@ -1,145 +1,98 @@
-const API_URL = 'https://deckofcardsapi.com/api/deck/new/draw/?count=20';
-let jugadorMazo = [];
-let computadoraMazo = [];
-let puntajeJugador = 0;
-let puntajeComputadora = 0;
-let deckId = null;
+document.addEventListener("DOMContentLoaded", function() {
+    const startBtn = document.getElementById("start-btn");
+    const hitBtn = document.getElementById("hit-btn");
+    const standBtn = document.getElementById("stand-btn");
+    const playerHand = document.getElementById("player-hand");
+    const dealerHand = document.getElementById("dealer-hand");
+    const resultDiv = document.getElementById("result");
 
-async function iniciarJuego() {
-    const respuesta = await fetch(API_URL);
-    const datos = await respuesta.json();
+    let deckId;
+    let playerScore = 0;
+    let dealerScore = 0;
+    let playerHandCards = [];
+    let dealerHandCards = [];
 
-    deckId = datos.deck_id;
-    jugadorMazo = datos.cards.slice(0, 10);
-    computadoraMazo = datos.cards.slice(10, 20);
+    startBtn.addEventListener("click", startGame);
+    function startGame() {
+        fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
+            .then(response => response.json())
+            .then(data => {
+                deckId = data.deck_id;
+                playerScore = 0;
+                dealerScore = 0;
+                playerHandCards = [];
+                dealerHandCards = [];
+                resultDiv.textContent = "";
+                drawCard("player");
+                drawCard("player");
+                drawCard("dealer");
+                drawCard("dealer");
+                hitBtn.style.display = "inline";
+                standBtn.style.display = "inline";
+                startBtn.style.display = "none";
+            })
+            .catch(error => console.log("Error:", error));
+    }
 
-    mostrarCartasEnMano(jugadorMazo, 'jugador');
-}
+    function drawCard(player) {
+        fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=1`)
+            .then(response => response.json())
+            .then(data => {
+                const card = data.cards[0];
+                const value = getCardValue(card);
+                if (player === "player") {
+                    playerHandCards.push(card);
+                    playerScore += value;
+                    renderHand(playerHand, playerHandCards);
+                } else {
+                    dealerHandCards.push(card);
+                    dealerScore += value;
+                    renderHand(dealerHand, dealerHandCards);
+                }
+            })
+            .catch(error => console.log("Error:", error));
+    }
 
-function mostrarCartasEnMano(cartas, jugador) {
-    const contenedor = document.getElementById(jugador === 'jugador' ? 'mano-jugador' : 'mano-computadora');
-    contenedor.innerHTML = '';
+    function getCardValue(card) {
+        const value = parseInt(card.value);
+        return isNaN(value) ? (card.value === "ACE" ? 11 : 10) : value;
+    }
 
-    cartas.forEach((carta, index) => {
-        const elementoCarta = document.createElement('img');
-        elementoCarta.className = 'card';
-        elementoCarta.src = carta.image;
-        elementoCarta.alt = `${carta.value} ${carta.suit}`;
-        elementoCarta.onclick = () => jugarCarta(jugador, carta, index);
-        contenedor.appendChild(elementoCarta);
+    function renderHand(handElement, handCards) {
+        handElement.innerHTML = "";
+        handCards.forEach(card => {
+            const img = document.createElement("img");
+            img.src = card.image;
+            img.alt = card.code;
+            img.classList.add("card");
+            handElement.appendChild(img);
+        });
+    }
+
+    hitBtn.addEventListener("click", () => {
+        drawCard("player");
+        if (playerScore > 21) {
+            endGame("Dealer wins - Player busted!");
+        }
     });
-}
 
-function jugarCarta(jugador, cartaJugada, index) {
-    if (!cartasHabilitadas) {
-        return;
+    standBtn.addEventListener("click", () => {
+        while (dealerScore < 17) {
+            drawCard("dealer");
+        }
+        if (dealerScore > 21 || dealerScore < playerScore) {
+            endGame("Player wins!");
+        } else if (dealerScore > playerScore) {
+            endGame("Dealer wins!");
+        } else {
+            endGame("It's a tie!");
+        }
+    });
+
+    function endGame(message) {
+        resultDiv.textContent = message;
+        hitBtn.style.display = "none";
+        standBtn.style.display = "none";
+        startBtn.style.display = "inline";
     }
-
-    cartasHabilitadas = false;
-
-    const cartaComputadora = computadoraMazo[Math.floor(Math.random() * computadoraMazo.length)];
-
-    mostrarCartasSeleccionadas(cartaJugada, cartaComputadora);
-
-    setTimeout(() => {
-        const resultado = compararCartas(cartaJugada, cartaComputadora);
-        actualizarPuntaje(resultado);
-
-        jugadorMazo.splice(index, 1);
-        computadoraMazo.splice(computadoraMazo.indexOf(cartaComputadora), 1);
-
-        mostrarCartasEnMano(jugadorMazo, 'jugador');
-        ocultarCartaComputadora();
-
-        setTimeout(() => {
-            cartasHabilitadas = true;
-        }, 2000);
-    }, 2000);
-}
-
-function mostrarCartasSeleccionadas(cartaJugador, cartaComputadora) {
-    const contenedorCartas = document.getElementById('cartas-seleccionadas');
-    contenedorCartas.innerHTML = '';
-
-    const cartaJugadorElemento = document.createElement('img');
-    cartaJugadorElemento.className = 'carta-seleccionada';
-    cartaJugadorElemento.src = cartaJugador.image;
-    cartaJugadorElemento.alt = `${cartaJugador.value} ${cartaJugador.suit}`;
-    contenedorCartas.appendChild(cartaJugadorElemento);
-
-    const vsElemento = document.createElement('span');
-    vsElemento.className = 'vs';
-    vsElemento.textContent = 'vs';
-    contenedorCartas.appendChild(vsElemento);
-
-    const cartaComputadoraElemento = document.createElement('img');
-    cartaComputadoraElemento.className = 'carta-seleccionada';
-    cartaComputadoraElemento.src = cartaComputadora.image;
-    cartaComputadoraElemento.alt = `${cartaComputadora.value} ${cartaComputadora.suit}`;
-    contenedorCartas.appendChild(cartaComputadoraElemento);
-
-    setTimeout(() => {
-        contenedorCartas.innerHTML = '';
-    }, 2000);
-}
-
-let cartasHabilitadas = true;
-
-function compararCartas(cartaJugador, cartaComputadora) {
-    const valorCartaJugador = getValorCarta(cartaJugador);
-    const valorCartaComputadora = getValorCarta(cartaComputadora);
-
-    if (valorCartaJugador > valorCartaComputadora) {
-        return 'Ganaste la ronda!';
-    } else if (valorCartaJugador < valorCartaComputadora) {
-        return 'La Computadora ganó la ronda.';
-    } else {
-        return 'Empate en la ronda.';
-    }
-}
-
-function getValorCarta(carta) {
-    const valores = {
-        'ACE': 14,
-        'KING': 13,
-        'QUEEN': 12,
-        'JACK': 11
-    };
-    return valores[carta.value] || parseInt(carta.value);
-}
-
-function actualizarPuntaje(resultado) {
-    if (resultado === 'Ganaste la ronda!') {
-        puntajeJugador++;
-    } else if (resultado === 'La Computadora ganó la ronda.') {
-        puntajeComputadora++;
-    }
-    document.getElementById('info-juego').textContent = `Puntuación Jugador: ${puntajeJugador} | Puntuación Computadora: ${puntajeComputadora}`;
-}
-
-function mostrarGanador() {
-    let mensaje = '';
-    if (puntajeJugador > puntajeComputadora) {
-        mensaje = '¡Felicidades, has ganado!';
-    } else if (puntajeJugador < puntajeComputadora) {
-        mensaje = 'La Computadora ha ganado.';
-    } else {
-        mensaje = 'Empate.';
-    }
-    const resultadoDiv = document.getElementById('resultado');
-    resultadoDiv.innerHTML = `<h1>${mensaje}</h1>`;
-}
-
-function ocultarCartaComputadora() {
-    const cartaComputadora = document.getElementById('carta-computadora');
-    cartaComputadora.style.display = 'none';
-}
-
-function mostrarCartaComputadora(carta) {
-    const cartaComputadora = document.getElementById('carta-computadora');
-    cartaComputadora.src = carta.image;
-    cartaComputadora.alt = `${carta.value} ${carta.suit}`;
-    cartaComputadora.style.display = 'block';
-}
-
-document.addEventListener('DOMContentLoaded', iniciarJuego);
+});

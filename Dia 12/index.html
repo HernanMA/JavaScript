@@ -1,24 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack</title>
     <link rel="stylesheet" href="Styles/style.css">
-    <title>Document</title>
 </head>
-
 <body>
-    <div class="container">
-        <div class="mano" id="mano-jugador"></div>
-        <div class="info" id="info-juego">Puntuación Jugador: 0 | Puntuación Computadora: 0</div>
-        <div class="resultado" id="resultado"></div>
-        <div id="cartas-seleccionadas" class="cartas-seleccionadas"></div>
-        <button id="reiniciar-btn" onclick="window.location.reload()">Reiniciar Juego</button>
+    <div id="game-container">
+        <h1>Blackjack</h1>
+        <div id="player-hand"></div>
+        <div id="dealer-hand"></div>
+        <button id="start-btn">Start Game</button>
+        <button id="hit-btn">Hit</button>
+        <button id="stand-btn">Stand</button>
+        <div id="result"></div>
     </div>
-    <img id="carta-computadora" class="carta-computadora" src="" alt="" style="display: none;">
 
     <script src="script.js"></script>
 </body>
-
 </html>
