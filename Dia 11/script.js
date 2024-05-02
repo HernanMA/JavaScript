@@ -1,71 +1,98 @@
-const pokemonName = document.querySelector('.pokemon__name');
-const pokemonNumber = document.querySelector('.pokemon__number');
-const pokemonImage = document.querySelector('.pokemon__image');
+document.addEventListener("DOMContentLoaded", function() {
+    const startBtn = document.getElementById("start-btn");
+    const hitBtn = document.getElementById("hit-btn");
+    const standBtn = document.getElementById("stand-btn");
+    const playerHand = document.getElementById("player-hand");
+    const dealerHand = document.getElementById("dealer-hand");
+    const resultDiv = document.getElementById("result");
 
-const form = document.querySelector('.form');
-const input = document.querySelector('.input__search');
-const buttonPrev = document.querySelector('.btn-prev');
-const buttonNext = document.querySelector('.btn-next');
+    let deckId;
+    let playerScore = 0;
+    let dealerScore = 0;
+    let playerHandCards = [];
+    let dealerHandCards = [];
 
-let searchPokemon = 1;
-
-const fetchPokemon = async (pokemon) => {
-    const APIResponse = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`);
-    if (APIResponse.status === 200) {
-        const data = await APIResponse.json();
-        return data;
+    startBtn.addEventListener("click", startGame);
+    function startGame() {
+        fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
+            .then(response => response.json())
+            .then(data => {
+                deckId = data.deck_id;
+                playerScore = 0;
+                dealerScore = 0;
+                playerHandCards = [];
+                dealerHandCards = [];
+                resultDiv.textContent = "";
+                drawCard("player");
+                drawCard("player");
+                drawCard("dealer");
+                drawCard("dealer");
+                hitBtn.style.display = "inline";
+                standBtn.style.display = "inline";
+                startBtn.style.display = "none";
+            })
+            .catch(error => console.log("Error:", error));
     }
-}
 
-const renderPokemon = async (pokemon) => {
-    pokemonName.innerHTML = 'Loading...';
-    pokemonNumber.innerHTML = '';
-
-    if (pokemon > 649) {
-        pokemonImage.style.display = 'none';
-        pokemonName.innerHTML = 'Pokemon not found :c';
-        pokemonNumber.innerHTML = '';
-        return;
+    function drawCard(player) {
+        fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=1`)
+            .then(response => response.json())
+            .then(data => {
+                const card = data.cards[0];
+                const value = getCardValue(card);
+                if (player === "player") {
+                    playerHandCards.push(card);
+                    playerScore += value;
+                    renderHand(playerHand, playerHandCards);
+                } else {
+                    dealerHandCards.push(card);
+                    dealerScore += value;
+                    renderHand(dealerHand, dealerHandCards);
+                }
+            })
+            .catch(error => console.log("Error:", error));
     }
 
-    const data = await fetchPokemon(pokemon);
-
-    if (data) {
-        pokemonImage.style.display = 'block';
-        pokemonName.innerHTML = data.name;
-        pokemonNumber.innerHTML = data.id;
-        pokemonImage.src = data['sprites']['versions']['generation-v']['black-white']['animated']['front_default'];
-        input.value = '';
-        searchPokemon = data.id;
-        playPokemonCry(data.cries.latest);
-    } else {
-        pokemonImage.style.display = 'none';
-        pokemonName.innerHTML = 'Not found :(';
-        pokemonNumber.innerHTML = '';
+    function getCardValue(card) {
+        const value = parseInt(card.value);
+        return isNaN(value) ? (card.value === "ACE" ? 11 : 10) : value;
     }
-}
 
-function playPokemonCry(audioUrl) {
-    let audio = document.getElementById("pokemonCry");
-    audio.src = audioUrl;
-    audio.play();
-}
+    function renderHand(handElement, handCards) {
+        handElement.innerHTML = "";
+        handCards.forEach(card => {
+            const img = document.createElement("img");
+            img.src = card.image;
+            img.alt = card.code;
+            img.classList.add("card");
+            handElement.appendChild(img);
+        });
+    }
 
-form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    renderPokemon(input.value.toLowerCase());
+    hitBtn.addEventListener("click", () => {
+        drawCard("player");
+        if (playerScore > 21) {
+            endGame("Dealer wins - Player busted!");
+        }
+    });
+
+    standBtn.addEventListener("click", () => {
+        while (dealerScore < 17) {
+            drawCard("dealer");
+        }
+        if (dealerScore > 21 || dealerScore < playerScore) {
+            endGame("Player wins!");
+        } else if (dealerScore > playerScore) {
+            endGame("Dealer wins!");
+        } else {
+            endGame("It's a tie!");
+        }
+    });
+
+    function endGame(message) {
+        resultDiv.textContent = message;
+        hitBtn.style.display = "none";
+        standBtn.style.display = "none";
+        startBtn.style.display = "inline";
+    }
 });
-
-buttonPrev.addEventListener('click', () => {
-    if (searchPokemon > 1) {
-        searchPokemon -= 1;
-        renderPokemon(searchPokemon);
-    }
-});
-
-buttonNext.addEventListener('click', () => {
-    searchPokemon += 1;
-    renderPokemon(searchPokemon);
-});
-
-renderPokemon(searchPokemon);
