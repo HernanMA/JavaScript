@@ -3,20 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blackjack</title>
-    <link rel="stylesheet" href="Styles/style.css">
+    <title>Cards Game</title>
+    <link rel="stylesheet" href="styles/style.css">
 </head>
-<body>
-    <div id="game-container">
-        <h1>Blackjack</h1>
-        <div id="player-hand"></div>
-        <div id="dealer-hand"></div>
-        <button id="start-btn">Start Game</button>
-        <button id="hit-btn">Hit</button>
-        <button id="stand-btn">Stand</button>
-        <div id="result"></div>
-    </div>
 
-    <script src="script.js"></script>
+<body>
+    
+    <script src="https://unpkg.com/alpinejs@3.1.x/dist/cdn.min.js" defer></script>
+    <div x-data="app" x-cloak>
+        <div id="pcArea" class="cardArea">
+            <!-- Un div con el ID "pcArea" y la clase "cardArea" que contiene las cartas del repartidor -->
+            <h3>Dealer</h3>
+            <template x-for="card in pcCards">
+                <!-- Una plantilla que se repite por cada carta en las cartas del repartidor -->
+                <img :src="card.showback?BACK_CARD:card.image" :title="card.showback?'':card.title">
+                <!-- Una imagen de la carta del repartidor con el atributo src que cambia según si se debe mostrar el reverso de la carta o la imagen de la carta -->
+            </template>
+        </div>
+        <div id="playerArea" class="cardArea">
+            <!-- Un div con el ID "playerArea" y la clase "cardArea" que contiene las cartas del jugador -->
+            <h3>Jugador</h3>
+            <template x-for="card in playerCards">
+                <!-- Una plantilla que se repite por cada carta en las cartas del jugador -->
+                <img :src="card.image" :title="card.title">
+                <!-- Una imagen de la carta del jugador con el atributo src que muestra la imagen de la carta -->
+            </template>
+        </div>
+        <div id="status">
+            <template x-if="playerTurn">
+                <p>
+                    Que quieres hacer?
+                    <button @click="hitMe" :disabled="hitMeDisabled">Reparte!</button>
+                    <button @click="stay">Plantarse</button>
+                </p>
+            </template>
+            <template x-if="pcTurn">
+                <p>
+                    <span x-text="pcText"></span>
+                </p>
+            </template>
+            <template x-if="playerBusted">
+                <p>
+                    Perdedor!
+                    <button @click="newGame">Nuevo Juego</button>
+                </p>
+            </template>
+            <template x-if="pcBusted">
+                <p>
+                    El repartidor es un perdedor - Tu ganas!
+                    <button @click="newGame">Nuevo Juego</button>
+                </p>
+            </template>
+            <template x-if="pcWon">
+                <p>
+                    Repatidor gana.
+                    <button @click="newGame">Nuevo Juego</button>
+                </p>
+            </template>
+            <template x-if="playerWon">
+                <p>
+                    Tu ganas!
+                    <button @click="newGame">Nuevo Juego</button>
+                </p>
+            </template>
+        </div>
+    </div>
+<script src="script.js"></script>
 </body>
 </html>

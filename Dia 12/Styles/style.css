@@ -1,20 +1,44 @@
-#game-container {
+[x-cloak] {
+    display: none !important;
+}
+/* La regla [x-cloak] oculta los elementos con el atributo x-cloak, lo cual se utiliza para ocultar elementos antes de que se hayan inicializado con Alpine.js */
+
+body {
+    background: url("https://assets.codepen.io/74045/green.jpg") no-repeat center center fixed;
+    background-size: cover;
+}
+
+.cardArea {
+    width: 100%;
     text-align: center;
 }
 
-#player-hand, #dealer-hand {
-    margin-top: 20px;
+.cardArea h3 {
+    color: white;
+    font-weight: bold;
+    font-size: 1.5em;
 }
 
-.card {
-    display: inline-block;
-    width: 50px;
-    height: 80px;
-    border: 1px solid black;
-    margin-right: 5px;
+.cardArea img {
+    max-width: 18%;
+    margin: 5px;
 }
 
-button {
+#status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 60%;
+    height: 100px;
     margin-top: 20px;
-    cursor: pointer;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: white;
+    font-size: 1.5em;
+}
+
+#status p {
+    margin-top: auto;
+    margin-bottom: auto;
 }

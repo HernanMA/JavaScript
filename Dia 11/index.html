@@ -1,40 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./styles/style.css">
-    <script defer src="./js/script.js"></script>
-    <link rel="icon" type="icono" href="storage/image/Pokebola-pokeball-png-0.png">
-    <title>Pokédex</title>
+    <title>Blackjack</title>
+    <link rel="stylesheet" href="Styles/style.css">
 </head>
-
 <body>
-
-    <main>
-        <img src="#" alt="pokemon" class="pokemon__image">
-
-        <h1 class="pokemon__data">
-            <span class="pokemon__number"></span> 
-            <span class="pokemon__name"></span>
-        </h1>
-
-        <form class="form">
-            <input type="search" class="input__search" placeholder="Name or Number" required />
-        </form>
-
-        <div class="buttons">
-            <button class="button btn-prev">Prev &lt;</button>
-            <button class="button btn-next">Next &gt;</button>
-        </div>
-
-        <img src="./storage/image/pokedex.png" alt="pokedex" class="pokedex">
-
-        <audio id="pokemonCry" controls style="display: none;">
-        </audio>
-        
-    </main>
+    <div id="game-container">
+        <h1>Blackjack</h1>
+        <div id="player-hand"></div>
+        <div id="dealer-hand"></div>
+        <button id="start-btn">Start Game</button>
+        <button id="hit-btn">Hit</button>
+        <button id="stand-btn">Stand</button>
+        <div id="result"></div>
+    </div>
 
     <script src="script.js"></script>
 </body>

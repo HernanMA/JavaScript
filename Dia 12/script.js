@@ -1,98 +1,147 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const startBtn = document.getElementById("start-btn");
-    const hitBtn = document.getElementById("hit-btn");
-    const standBtn = document.getElementById("stand-btn");
-    const playerHand = document.getElementById("player-hand");
-    const dealerHand = document.getElementById("dealer-hand");
-    const resultDiv = document.getElementById("result");
+// Constantes globales
+const BACK_CARD = "https://deckofcardsapi.com/static/img/back.png"; // URL de la imagen de la parte trasera de una carta.
+const DEALER_PAUSE = 1500; // Tiempo de pausa del dealer en milisegundos.
 
-    let deckId;
-    let playerScore = 0;
-    let dealerScore = 0;
-    let playerHandCards = [];
-    let dealerHandCards = [];
-
-    startBtn.addEventListener("click", startGame);
-    function startGame() {
-        fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
-            .then(response => response.json())
-            .then(data => {
-                deckId = data.deck_id;
-                playerScore = 0;
-                dealerScore = 0;
-                playerHandCards = [];
-                dealerHandCards = [];
-                resultDiv.textContent = "";
-                drawCard("player");
-                drawCard("player");
-                drawCard("dealer");
-                drawCard("dealer");
-                hitBtn.style.display = "inline";
-                standBtn.style.display = "inline";
-                startBtn.style.display = "none";
-            })
-            .catch(error => console.log("Error:", error));
-    }
-
-    function drawCard(player) {
-        fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=1`)
-            .then(response => response.json())
-            .then(data => {
-                const card = data.cards[0];
-                const value = getCardValue(card);
-                if (player === "player") {
-                    playerHandCards.push(card);
-                    playerScore += value;
-                    renderHand(playerHand, playerHandCards);
-                } else {
-                    dealerHandCards.push(card);
-                    dealerScore += value;
-                    renderHand(dealerHand, dealerHandCards);
+// Inicialización de Alpine.js
+document.addEventListener('alpine:init', () => {
+    // Definición de la aplicación 'app' con Alpine.js
+    Alpine.data('app', () => ({
+        // Método inicial que baraja el mazo y reparte las cartas.
+        async init() {
+            await this.shuffleDeck();
+            await this.deal();
+        },
+        // Método para barajar el mazo de cartas utilizando la API de deckofcards.
+        async shuffleDeck() {
+            let resp = await fetch(`https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=${this.deckSize}`);
+            this.deck = await resp.json();
+        },
+        // Método para repartir las cartas al jugador y al PC (dealer).
+        async deal() {
+            this.playerCards.push(await this.drawCard());
+            
+            let newcard = await this.drawCard();
+            newcard.showback = true;
+            this.pcCards.push(newcard);
+            this.playerCards.push(await this.drawCard());
+            this.pcCards.push(await this.drawCard());
+        },
+        // Método para solicitar una carta del mazo.
+        async drawCard(count = 1) {
+            let resp = await fetch(`https://www.deckofcardsapi.com/api/deck/${this.deck.deck_id}/draw/?count=${count}`);
+            let cardArr = await resp.json();
+            let card = cardArr.cards[0];
+            card.title = `${card.value} of ${card.suit}`;
+            return card;
+        },
+        // Método para calcular el valor de la mano, considerando el valor especial del As.
+        getCount(hand) {
+            let result = {};
+            let lowCount = 0;
+            for (card of hand) {
+                if (card.value === 'JACK' || card.value === 'KING' || card.value === 'QUEEN') lowCount += 10;
+                else if (card.value === 'ACE') lowCount += 1;
+                else lowCount += Number(card.value);
+            }
+            let highCount = 0;
+            let oneAce = false;
+            for (card of hand) {
+                if (card.value === 'JACK' || card.value === 'KING' || card.value === 'QUEEN') highCount += 10;
+                else if (card.value === 'ACE') {
+                    if (oneAce) highCount += 1;
+                    else {
+                        highCount += 11;
+                        oneAce = true;
+                    }
                 }
-            })
-            .catch(error => console.log("Error:", error));
-    }
+                else highCount += Number(card.value);
+            }
+            return { lowCount, highCount };
+        },
+        // Método para que el jugador pida una carta.
+        async hitMe() {
+            this.hitMeDisabled = true;
+            this.playerCards.push(await this.drawCard());
+            let count = this.getCount(this.playerCards);
+            if (count.lowCount >= 22) {
+                this.playerTurn = false;
+                this.playerBusted = true;
+            }
+            this.hitMeDisabled = false;
+        },
+        // Método para iniciar un nuevo juego.
+        async newGame() {
+            this.pcBusted = false;
+            this.playerBusted = false;
+            this.playerWon = false;
+            this.pcWon = false;
+            this.playerCards = [];
+            this.pcCards = [];
+            await this.shuffleDeck();
+            await this.deal();
+            this.playerTurn = true;
+        },
+        // Método para que el jugador se plante y pase el turno al dealer.
+        async stay() {
+            this.playerTurn = false;
+            this.pcTurn = true;
+            this.startDealer();
+        },
+        // Método para controlar el turno del dealer.
+        async startDealer() {
+            this.pcText = 'El dealer comienza su turno...';
+            await delay(DEALER_PAUSE);
 
-    function getCardValue(card) {
-        const value = parseInt(card.value);
-        return isNaN(value) ? (card.value === "ACE" ? 11 : 10) : value;
-    }
+            this.pcText = 'Déjame mostrar mi mano...';
+            await delay(DEALER_PAUSE);
 
-    function renderHand(handElement, handCards) {
-        handElement.innerHTML = "";
-        handCards.forEach(card => {
-            const img = document.createElement("img");
-            img.src = card.image;
-            img.alt = card.code;
-            img.classList.add("card");
-            handElement.appendChild(img);
-        });
-    }
+            this.pcCards[0].showback = false;
 
-    hitBtn.addEventListener("click", () => {
-        drawCard("player");
-        if (playerScore > 21) {
-            endGame("Dealer wins - Player busted!");
-        }
-    });
+            let playerCount = this.getCount(this.playerCards);
+            let playerScore = playerCount.lowCount;
+            if (playerCount.highCount < 22) playerScore = playerCount.highCount;
 
-    standBtn.addEventListener("click", () => {
-        while (dealerScore < 17) {
-            drawCard("dealer");
-        }
-        if (dealerScore > 21 || dealerScore < playerScore) {
-            endGame("Player wins!");
-        } else if (dealerScore > playerScore) {
-            endGame("Dealer wins!");
-        } else {
-            endGame("It's a tie!");
-        }
-    });
+            let dealerLoop = true;
+            while (dealerLoop) {
+                let count = this.getCount(this.pcCards);
 
-    function endGame(message) {
-        resultDiv.textContent = message;
-        hitBtn.style.display = "none";
-        standBtn.style.display = "none";
-        startBtn.style.display = "inline";
-    }
+                if (count.highCount <= 16) {
+                    this.pcText = 'El dealer saca una carta...';
+                    await delay(DEALER_PAUSE);
+                    this.pcCards.push(await this.drawCard());
+                } else if (count.highCount <= 21) {
+                    this.pcText = 'El dealer se planta...';
+                    await delay(DEALER_PAUSE);
+                    dealerLoop = false;
+                    this.pcTurn = false;
+                    if (count.highCount >= playerScore) this.pcWon = true;
+                    else this.playerWon = true;
+                } else {
+                    dealerLoop = false;
+                    this.pcTurn = false;
+                    this.pcBusted = true;
+                }
+            }
+        },
+        // Propiedades de la aplicación para controlar el estado del juego.
+        deckSize: 6, // Tamaño del mazo.
+        hitMeDisabled: false, // Estado del botón "Hit Me".
+        playerCards: [], // Cartas del jugador.
+        pcCards: [], // Cartas del PC (dealer).
+        pcText: '', // Texto para mostrar acciones del dealer.
+        // Estados para controlar el resultado del juego.
+        pcBusted: false, // Si el dealer se ha pasado.
+        pcWon: false, // Si el dealer ha ganado.
+        playerBusted: false, // Si el jugador se ha pasado.
+        playerWon: false, // Si el jugador ha ganado.
+        pcTurn: false, // Si es el turno del dealer.
+        playerTurn: true // Si es el turno del jugador.
+    }))
 });
+
+// Función para crear un retraso.
+async function delay(x) {
+    return new Promise(resolve => {
+        setTimeout(() => resolve(), x);
+    });
+}
