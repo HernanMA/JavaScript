@@ -1,0 +1,11 @@
+.container {
+    margin-top: 5em;
+    border: 1px solid;
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 2em;
+}
+
+.productora {
+    grid-column: 1 / span 2;
+}
