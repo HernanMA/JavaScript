@@ -9,3 +9,27 @@
 .productora {
     grid-column: 1 / span 2;
 }
+
+#Crear {
+    background-color: black;
+    color: white;
+    border-radius: 6px;
+}
+
+#Ver {
+    background-color: rgb(40, 141, 225);
+    border-radius: 5px;
+    color: white;
+}
+
+#Eliminar {
+    background-color: red;
+    border-radius: 5px;
+    color: white;
+}
+
+#Actualizar {
+    background-color: rgb(38, 88, 31);
+    border-radius: 5px;
+    color: white;
+}
