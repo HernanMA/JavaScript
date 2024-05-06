@@ -32,3 +32,5 @@ function render(){
     })
     document.getElementById("Heroediv").innerHTML = content;
 }
+
+
