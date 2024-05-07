@@ -1,12 +1,18 @@
-function getUsers() {
-    fetch("https://randomuser.me/api/?results=2")
-        .then((results) => {
-            return results.json();
-        })
-        .then((data) => {
-            console.log(data);
-            // Access your data here
-        });
+const nombre = document.querySelector('#nombre');
+const correo = document.querySelector('#correo');
+const telefono = document.querySelector('#telefono');
+const foto = document.querySelector('#foto');
+
+const generarUsuario = async () => {
+    const url = 'https://randomuser.me/api/';
+    const respuesta = await fetch(url);
+    const { results } = await respuesta.json();
+    const datos = results[0];
+
+    foto.src = datos.picture.medium;
+    nombre.textContent = datos.name.first;
+    correo.textContent = datos.email;
+    telefono.textContent = datos.phone;
 }
 
-getUsers(); 
+document.addEventListener('DOMContentLoaded', generarUsuario);
