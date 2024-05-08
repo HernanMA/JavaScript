@@ -15,9 +15,15 @@ body {
     font-family: 'Nunito', sans-serif;
 }
 
+.datos {
+    display: none;
+    font-size: 1em;
+}
+
 h2 {
     font-style: italic;
     color: gray;
+    display: none;
 }
 
 #nombre {
@@ -32,7 +38,7 @@ h2 {
     background-color: rgb(255, 255, 255);
     text-align: center;
     margin-top: 10em;
-    padding: 20px;
+    padding: 4em;
     border-radius: 10px;
 }
 
@@ -43,7 +49,12 @@ h2 {
 }
 
 .iconos {
+    align-items: center;
     margin-top: 3em;
     display: grid;
     grid-template-columns: auto auto auto auto auto auto;
+}
+
+#infoHover {
+    font-size: 2em;
 }
