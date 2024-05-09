@@ -1,0 +1,61 @@
+@import url('https://unpkg.com/css.gg@2.0.0/icons/css/user.css');
+@import url('https://unpkg.com/css.gg@2.0.0/icons/css/smartphone-shake.css');
+@import url('https://unpkg.com/css.gg@2.0.0/icons/css/block.css');
+@import url('https://unpkg.com/css.gg@2.0.0/icons/css/voicemail-r.css');
+@import url('https://unpkg.com/css.gg@2.0.0/icons/css/flag.css');
+@import url('https://unpkg.com/css.gg@2.0.0/icons/css/calendar-dates.css');
+
+* {
+    margin: 0px;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: rgb(212, 239, 214);
+    font-family: 'Nunito', sans-serif;
+}
+
+.datos {
+    display: none;
+    font-size: 1em;
+}
+
+h2 {
+    font-style: italic;
+    color: gray;
+    display: none;
+}
+
+#nombre {
+    font-size: 2em;
+    color: black;
+}
+
+.container {
+    width: 50%;
+    max-width: 1000px;
+    margin: 0 auto;
+    background-color: rgb(255, 255, 255);
+    text-align: center;
+    margin-top: 10em;
+    padding: 4em;
+    border-radius: 10px;
+}
+
+#foto {
+    width: 10em;
+    border-radius: 10em;
+    border: outset .3em;
+}
+
+.iconos {
+    align-items: center;
+    margin-top: 3em;
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto;
+}
+
+#infoHover {
+    font-size: 1.5em;
+    color: gray;
+}
