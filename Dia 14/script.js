@@ -21,6 +21,18 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     }
 
+    const btnEliminarr = document.getElementById("Eliminar");
+    btnEliminarr.addEventListener("click", function() {
+        if(heroes.length > 0) {
+            heroes.pop(); // Elimina el último héroe del array
+            console.log("Héroe eliminado, héroes restantes:", heroes);
+            location.reload(); // Recarga la página
+        } else {
+            console.log("No hay héroes para eliminar");
+        }
+    });
+
+
 // Evento para eliminar el último héroe añadido cuando se hace clic en el botón "Eliminar"
 const btnEliminar = document.getElementById("Eliminar");
 btnEliminar.addEventListener("click", function() {
@@ -41,7 +53,7 @@ btnEliminar.addEventListener("click", function() {
     // Evento para actualizar los datos en el servidor cuando se hace clic en el botón "Actualizar"
     const btnActualizar = document.getElementById("Actualizar");
     btnActualizar.addEventListener("click", function () {
-        fetch('data.json', {
+        fetch('/javascript/dia14/data.json', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
